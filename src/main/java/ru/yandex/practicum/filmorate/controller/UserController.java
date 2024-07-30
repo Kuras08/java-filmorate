@@ -39,9 +39,9 @@ public class UserController {
     @PutMapping
     @Validated(UpdateGroup.class)
     public User updateUser(@RequestBody @Valid User user) {
-        Long id = user.getId();
-        log.info("Received request to update user with id: {}", id);
+        log.info("Received request to update user with id: {}", user.getId());
 
+        Long id = user.getId();
         User savedUser = storage.get(id);
         if (savedUser == null) {
             log.error("User with id {} not found", id);

@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,9 +18,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @DisplayName("FilmTests")
 class FilmTests {
-    private static final Validator validator;
+    private static Validator validator;
 
-    static {
+    @BeforeAll
+    static void setUp() {
         try (ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory()) {
             validator = validatorFactory.usingContext().getValidator();
         }
@@ -37,7 +39,7 @@ class FilmTests {
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("Name cannot be empty")));
+        assertValidationMessage(violations, "Name cannot be empty");
     }
 
     @Test
@@ -52,7 +54,7 @@ class FilmTests {
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("Description cannot exceed 200 characters")));
+        assertValidationMessage(violations, "Description cannot exceed 200 characters");
     }
 
     @Test
@@ -67,7 +69,7 @@ class FilmTests {
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("Release date invalid")));
+        assertValidationMessage(violations, "Release date invalid");
     }
 
     @Test
@@ -77,12 +79,12 @@ class FilmTests {
         film.setName("A film");
         film.setDescription("A description");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
-        film.setDuration(-10);  // Negative duration
+        film.setDuration(-10);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("Duration must be a positive number")));
+        assertValidationMessage(violations, "Duration must be a positive number");
     }
 
     @Test
@@ -105,10 +107,14 @@ class FilmTests {
         Film film = new Film();
         film.setName("A film");
         film.setDescription("A description");
-        film.setReleaseDate(LocalDate.of(2000, 1, 1));  // Valid release date
+        film.setReleaseDate(LocalDate.of(2000, 1, 1));
         film.setDuration(120);
 
         assertEquals(LocalDate.of(2000, 1, 1), film.getReleaseDate());
+    }
+
+    private void assertValidationMessage(Set<ConstraintViolation<Film>> violations, String message) {
+        assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals(message)));
     }
 }
 
