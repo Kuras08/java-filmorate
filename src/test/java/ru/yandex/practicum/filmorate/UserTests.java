@@ -9,6 +9,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.validation.CreateGroup;
+import ru.yandex.practicum.filmorate.validation.UpdateGroup;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -26,6 +28,36 @@ class UserTests {
         try (ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory()) {
             validator = validatorFactory.usingContext().getValidator();
         }
+    }
+
+    @Test
+    @DisplayName("Should fail validation when creating a user with non-null ID")
+    void shouldFailValidationWhenCreatingWithNonNullId() {
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("user@example.com");
+        user.setLogin("user_login");
+        user.setBirthday(LocalDate.of(2000, 1, 1));
+
+        Set<ConstraintViolation<User>> violations = validator.validate(user, CreateGroup.class);
+
+        assertFalse(violations.isEmpty());
+        assertValidationMessage(violations, "ID must be null when creating a new user");
+    }
+
+    @Test
+    @DisplayName("Should fail validation when updating a user with null ID")
+    void shouldFailValidationWhenUpdatingWithNullId() {
+        User user = new User();
+        user.setId(null);
+        user.setEmail("user@example.com");
+        user.setLogin("user_login");
+        user.setBirthday(LocalDate.of(2000, 1, 1));
+
+        Set<ConstraintViolation<User>> violations = validator.validate(user, UpdateGroup.class);
+
+        assertFalse(violations.isEmpty());
+        assertValidationMessage(violations, "ID cannot be null when updating a user");
     }
 
     @Test
