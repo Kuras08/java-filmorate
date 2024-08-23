@@ -13,14 +13,14 @@ import ru.yandex.practicum.filmorate.model.CustomErrorResponse;
 @Slf4j
 public class ErrorHandler {
 
-    @ExceptionHandler
+    @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public CustomErrorResponse handleNotFoundException(final NotFoundException e) {
         log.info("404 Not Found: {}", e.getMessage());
         return new CustomErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public CustomErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         log.info("400 Bad Request: {}", e.getMessage());

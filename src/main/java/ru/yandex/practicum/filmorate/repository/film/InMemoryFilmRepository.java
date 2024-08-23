@@ -63,6 +63,11 @@ public class InMemoryFilmRepository implements FilmRepository {
         }
     }
 
+    @Override
+    public boolean existsById(Long id) {
+        return movies.get(id) == null;
+    }
+
     private long getNextId() {
         return ++idCounter;
     }

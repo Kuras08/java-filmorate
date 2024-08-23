@@ -18,4 +18,6 @@ public interface FilmRepository {
     void addLike(Long filmId, Long userId);
 
     void removeLike(Long id, Long userId);
+
+    boolean existsById(Long id);
 }

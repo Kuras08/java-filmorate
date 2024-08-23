@@ -77,6 +77,11 @@ public class InMemoryUserRepository implements UserRepository {
         friends.computeIfAbsent(userId2, k -> new HashSet<>()).remove(userId1);
     }
 
+    @Override
+    public boolean existsById(Long id) {
+        return users.get(id) == null;
+    }
+
     private long getIdNext() {
         return ++currentId;
     }
