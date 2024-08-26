@@ -9,6 +9,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.validation.CreateGroup;
+import ru.yandex.practicum.filmorate.validation.UpdateGroup;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -25,6 +27,38 @@ class FilmTests {
         try (ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory()) {
             validator = validatorFactory.usingContext().getValidator();
         }
+    }
+
+    @Test
+    @DisplayName("Should fail validation when creating a film with non-null ID")
+    void shouldFailValidationWhenCreatingWithNonNullId() {
+        Film film = new Film();
+        film.setId(1L);
+        film.setName("A film");
+        film.setDescription("A description");
+        film.setReleaseDate(LocalDate.of(2000, 1, 1));
+        film.setDuration(120);
+
+        Set<ConstraintViolation<Film>> violations = validator.validate(film, CreateGroup.class);
+
+        assertFalse(violations.isEmpty());
+        assertValidationMessage(violations, "ID must be null when creating a new film");
+    }
+
+    @Test
+    @DisplayName("Should fail validation when updating a film with null ID")
+    void shouldFailValidationWhenUpdatingWithNullId() {
+        Film film = new Film();
+        film.setId(null);
+        film.setName("A film");
+        film.setDescription("A description");
+        film.setReleaseDate(LocalDate.of(2000, 1, 1));
+        film.setDuration(120);
+
+        Set<ConstraintViolation<Film>> violations = validator.validate(film, UpdateGroup.class);
+
+        assertFalse(violations.isEmpty());
+        assertValidationMessage(violations, "ID cannot be null when updating a film");
     }
 
     @Test

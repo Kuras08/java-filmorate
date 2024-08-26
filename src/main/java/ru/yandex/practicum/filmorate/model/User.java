@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -32,6 +33,6 @@ public class User {
     LocalDate birthday;
 
     public String getDisplayName() {
-        return (name != null && !name.isEmpty()) ? name : login;
+        return StringUtils.isNotBlank(name) ? name : login;
     }
 }
