@@ -18,8 +18,8 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@DisplayName("FilmTests")
-class FilmTests {
+@DisplayName("FilmTest")
+class FilmTest {
     private static Validator validator;
 
     @BeforeAll

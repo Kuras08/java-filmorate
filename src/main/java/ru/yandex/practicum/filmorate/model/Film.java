@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.validation.CreateGroup;
 import ru.yandex.practicum.filmorate.validation.UpdateGroup;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -18,19 +19,23 @@ public class Film {
 
     @Null(groups = CreateGroup.class, message = "ID must be null when creating a new film")
     @NotNull(groups = UpdateGroup.class, message = "ID cannot be null when updating a film")
-    Long id;
+    private Long id;
 
     @NotBlank(message = "Name cannot be empty")
-    String name;
+    private String name;
 
     @Size(max = 200, message = "Description cannot exceed 200 characters")
-    String description;
+    private String description;
 
     @NotNull(message = "Release date cannot be null")
-    LocalDate releaseDate;
+    private LocalDate releaseDate;
 
     @Positive(message = "Duration must be a positive number")
-    Integer duration;
+    private Integer duration;
+
+    private Mpa mpa;
+
+    private LinkedHashSet<Genre> genres = new LinkedHashSet<>();
 
     @AssertTrue(message = "Release date invalid")
     public boolean isValidReleaseDate() {
