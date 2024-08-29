@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
 import ru.yandex.practicum.filmorate.validation.CreateGroup;
 import ru.yandex.practicum.filmorate.validation.UpdateGroup;
 
@@ -59,7 +59,7 @@ public class FilmController {
 
     @GetMapping("/popular")
     @ResponseStatus(HttpStatus.OK)
-    public Collection<Film> getPopularFilms(@RequestParam(defaultValue = "10") Long count) {
+    public Collection<Film> getPopularFilms(@RequestParam(defaultValue = "1000") Long count) {
         return filmService.getPopularMovies(count);
     }
 }

@@ -1,7 +1,8 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.user;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -13,10 +14,13 @@ import java.util.Set;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
+
+    @Autowired
+    public UserServiceImpl(@Qualifier("jdbcUserRepository") UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public User createUser(User user) {
@@ -30,9 +34,9 @@ public class UserServiceImpl implements UserService {
     public User updateUser(User user) {
         log.info("Updating user with id: {}", user.getId());
         checkUserExists(user.getId());
-        userRepository.updateUser(user);
-        log.info("Updated user with id: {}", user.getId());
-        return user;
+        User updatedUser = userRepository.updateUser(user);
+        log.info("Updated user with id: {}", updatedUser.getId());
+        return updatedUser;
     }
 
     @Override
@@ -57,8 +61,9 @@ public class UserServiceImpl implements UserService {
         Set<User> friends = userRepository.getAllFriends(id);
         if (friends.isEmpty()) {
             log.info("User with id {} has no friends.", id);
+        } else {
+            log.info("Fetched {} friends for user with id: {}", friends.size(), id);
         }
-        log.info("Fetched {} friends for user with id: {}", friends.size(), id);
         return friends;
     }
 
@@ -91,10 +96,12 @@ public class UserServiceImpl implements UserService {
     }
 
     private void checkUserExists(Long userId) {
-        log.info("Checking if user with id: {} exists", userId);
-        Optional.ofNullable(userRepository.getUserById(userId))
-                .orElseThrow(() -> new NotFoundException("User with id " + userId + " not found"));
+        if (!userRepository.existsById(userId)) {
+            log.warn("User with id {} not found", userId);
+            throw new NotFoundException("User with id " + userId + " not found");
+        }
     }
 }
+
 
 

@@ -19,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
-@DisplayName("UserTests")
-class UserTests {
+@DisplayName("UserTest")
+class UserTest {
     private static Validator validator;
 
     @BeforeAll

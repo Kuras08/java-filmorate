@@ -17,20 +17,20 @@ import java.time.LocalDate;
 public class User {
     @Null(groups = CreateGroup.class, message = "ID must be null when creating a new user")
     @NotNull(groups = UpdateGroup.class, message = "ID cannot be null when updating a user")
-    Long id;
+    private Long id;
 
     @NotBlank(message = "Email cannot be empty")
     @Email(message = "Email must contain '@' symbol and be a valid email address")
-    String email;
+    private String email;
 
     @NotBlank(message = "Login cannot be empty and cannot contain spaces")
     @Pattern(regexp = "\\S+", message = "Login cannot contain spaces")
-    String login;
+    private String login;
 
-    String name;
+    private String name;
 
     @PastOrPresent(message = "Birthday cannot be in the future")
-    LocalDate birthday;
+    private LocalDate birthday;
 
     public String getDisplayName() {
         return StringUtils.isNotBlank(name) ? name : login;
