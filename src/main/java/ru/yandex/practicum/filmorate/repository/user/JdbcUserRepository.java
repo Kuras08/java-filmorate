@@ -130,15 +130,4 @@ public class JdbcUserRepository implements UserRepository {
 
         jdbc.update(sql, params);
     }
-
-    @Override
-    public boolean existsById(Long id) {
-        String sql = "SELECT COUNT(*) FROM users WHERE user_id = :id";
-
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
-
-        Integer count = jdbc.queryForObject(sql, params, Integer.class);
-        return count != null && count > 0;
-    }
-
 }

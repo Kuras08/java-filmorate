@@ -13,7 +13,10 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
 
 @Repository
 @Qualifier("jdbcFilmRepository")
@@ -140,7 +143,6 @@ public class JdbcFilmRepository implements FilmRepository {
 
         List<Film> films = jdbc.query(sql, params, filmRowMapper);
 
-        // Преобразуем список фильмов в LinkedHashSet, чтобы сохранить порядок
         return new LinkedHashSet<>(films);
     }
 
@@ -148,12 +150,11 @@ public class JdbcFilmRepository implements FilmRepository {
     public void addLike(Long filmId, Long userId) {
         String sql = "MERGE INTO likes (film_id, user_id) VALUES (:filmId, :userId)";
 
-        Map<String, Object> params = Map.of(
-                "filmId", filmId,
-                "userId", userId
-        );
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("filmId", filmId)
+                .addValue("userId", userId);
 
-        jdbc.update(sql, new MapSqlParameterSource(params));
+        jdbc.update(sql, params);
     }
 
     @Override
@@ -165,18 +166,6 @@ public class JdbcFilmRepository implements FilmRepository {
                 .addValue("userId", userId);
 
         jdbc.update(sql, params);
-    }
-
-    @Override
-    public boolean existsById(Long id) {
-        String sql = "SELECT COUNT(*) FROM films WHERE film_id = :filmId";
-
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("filmId", id);
-
-        Integer count = jdbc.queryForObject(sql, params, Integer.class);
-
-        return count != null && count > 0;
     }
 
     private LinkedHashSet<Genre> loadGenres(Long filmId) {

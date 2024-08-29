@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Repository
 @Qualifier("jdbcMpaRepository")
@@ -34,11 +37,10 @@ public class JdbcMpaRepository implements MpaRepository {
     }
 
     @Override
-    public boolean existsById(Integer id) {
-        String sql = "SELECT COUNT(*) FROM mpa WHERE mpa_id = :id";
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
-        Integer count = jdbc.queryForObject(sql, params, Integer.class);
-        return count != null && count > 0;
+    public Set<Integer> getAllMpaIds() {
+        String sql = "SELECT mpa_id FROM mpa";
+        List<Integer> ids = jdbc.query(sql, (rs, rowNum) -> rs.getInt("mpa_id"));
+        return new HashSet<>(ids);
     }
 }
 

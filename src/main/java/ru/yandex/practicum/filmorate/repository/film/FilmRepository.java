@@ -19,5 +19,4 @@ public interface FilmRepository {
 
     void removeLike(Long id, Long userId);
 
-    boolean existsById(Long id);
 }

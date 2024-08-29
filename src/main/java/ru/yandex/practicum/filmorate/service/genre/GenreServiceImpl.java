@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service.genre;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -31,14 +32,10 @@ public class GenreServiceImpl implements GenreService {
     @Override
     public Genre getGenreById(Integer id) {
         log.info("Fetching genre with id: {}", id);
-        if (!genreRepository.existsById(id)) {
+        try {
+            return genreRepository.getGenreById(id);
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Genre with id " + id + " not found");
         }
-        return genreRepository.getGenreById(id);
-    }
-
-    @Override
-    public boolean existsById(Integer id) {
-        return genreRepository.existsById(id);
     }
 }

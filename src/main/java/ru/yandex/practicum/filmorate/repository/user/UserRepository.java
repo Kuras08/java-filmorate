@@ -22,5 +22,4 @@ public interface UserRepository {
 
     void removeFriend(Long userId1, Long userId2);
 
-    boolean existsById(Long id);
 }

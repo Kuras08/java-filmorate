@@ -8,6 +8,4 @@ public interface MpaService {
     Collection<Mpa> getAllMpa();
 
     Mpa getMpaById(Integer id);
-
-    boolean existsById(Integer id);
 }

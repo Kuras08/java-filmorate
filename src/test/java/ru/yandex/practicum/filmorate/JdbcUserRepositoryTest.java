@@ -103,9 +103,7 @@ public class JdbcUserRepositoryTest {
     @DisplayName("should return all users")
     public void shouldReturnAllUsers() {
         Collection<User> users = userRepository.getAllUsers();
-
         assertThat(users).isNotEmpty();
-        assertThat(users.size()).isGreaterThan(0);
     }
 
     @Test

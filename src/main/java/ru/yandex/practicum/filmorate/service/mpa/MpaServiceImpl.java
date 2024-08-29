@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service.mpa;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -31,14 +32,10 @@ public class MpaServiceImpl implements MpaService {
     @Override
     public Mpa getMpaById(Integer id) {
         log.info("Fetching MPA rating with id: {}", id);
-        if (!mpaRepository.existsById(id)) {
-            throw new NotFoundException("MPA rating with id " + id + " not found");
+        try {
+            return mpaRepository.getMpaById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("MPA with id " + id + " not found");
         }
-        return mpaRepository.getMpaById(id);
-    }
-
-    @Override
-    public boolean existsById(Integer id) {
-        return mpaRepository.existsById(id);
     }
 }

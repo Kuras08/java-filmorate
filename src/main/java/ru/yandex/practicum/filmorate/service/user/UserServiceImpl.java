@@ -3,13 +3,13 @@ package ru.yandex.practicum.filmorate.service.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.repository.user.UserRepository;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -42,8 +42,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long id) {
         log.info("Fetching user with id: {}", id);
-        return Optional.ofNullable(userRepository.getUserById(id))
-                .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
+        checkUserExists(id);
+        User user = userRepository.getUserById(id);
+        log.info("Returning user with id: {}", id);
+        return user;
     }
 
     @Override
@@ -96,7 +98,9 @@ public class UserServiceImpl implements UserService {
     }
 
     private void checkUserExists(Long userId) {
-        if (!userRepository.existsById(userId)) {
+        try {
+            userRepository.getUserById(userId);
+        } catch (EmptyResultDataAccessException e) {
             log.warn("User with id {} not found", userId);
             throw new NotFoundException("User with id " + userId + " not found");
         }

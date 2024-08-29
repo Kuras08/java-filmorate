@@ -98,7 +98,6 @@ public class JdbcFilmRepositoryTest {
     public void shouldReturnAllFilms() {
         List<Film> films = (List<Film>) filmRepository.getAllFilms();
         assertThat(films).isNotEmpty();
-        assertThat(films.size()).isGreaterThan(0);
     }
 
     @Test

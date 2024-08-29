@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service.film;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.InvalidGenreException;
 import ru.yandex.practicum.filmorate.exception.InvalidMpaException;
@@ -16,6 +17,7 @@ import ru.yandex.practicum.filmorate.repository.user.UserRepository;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -39,8 +41,10 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public Film addFilm(Film film) {
         log.info("Adding film with details: {}", film);
+
         validateFilm(film.getMpa().getId(), film.getGenres());
         Film addedFilm = filmRepository.addFilm(film);
+
         log.info("Added film with id: {}", addedFilm.getId());
         return addedFilm;
     }
@@ -49,9 +53,11 @@ public class FilmServiceImpl implements FilmService {
     public Film updateFilm(Film film) {
         Long id = film.getId();
         log.info("Updating film with id: {}", id);
+
         checkFilmExists(id);
         validateFilm(film.getMpa().getId(), film.getGenres());
         Film updatedFilm = filmRepository.updateFilm(film);
+
         log.info("Updated film with id: {}", id);
         return updatedFilm;
     }
@@ -100,27 +106,35 @@ public class FilmServiceImpl implements FilmService {
     }
 
     private void checkFilmExists(Long filmId) {
-        if (!filmRepository.existsById(filmId)) {
+        try {
+            filmRepository.getFilmById(filmId);
+        } catch (EmptyResultDataAccessException e) {
             log.warn("Film with id {} not found", filmId);
             throw new NotFoundException("Film with id " + filmId + " not found");
         }
     }
 
     private void checkUserExists(Long userId) {
-        if (!userRepository.existsById(userId)) {
+        try {
+            userRepository.getUserById(userId);
+        } catch (EmptyResultDataAccessException e) {
             log.warn("User with id {} not found", userId);
             throw new NotFoundException("User with id " + userId + " not found");
         }
     }
 
     private void validateFilm(Integer mpaId, LinkedHashSet<Genre> genres) {
+        Set<Integer> validMpaIds = mpaRepository.getAllMpaIds();
+        Set<Integer> validGenreIds = genreRepository.getAllGenreIds();
+
+        if (!validMpaIds.contains(mpaId)) {
+            throw new InvalidMpaException("MPA rating with id " + mpaId + " does not exist");
+        }
+
         for (Genre genre : genres) {
-            if (!genreRepository.existsById(genre.getId())) {
+            if (!validGenreIds.contains(genre.getId())) {
                 throw new InvalidGenreException("Genre with id " + genre.getId() + " does not exist");
             }
-        }
-        if (!mpaRepository.existsById(mpaId)) {
-            throw new InvalidMpaException("MPA rating with id " + mpaId + " does not exist");
         }
     }
 }
